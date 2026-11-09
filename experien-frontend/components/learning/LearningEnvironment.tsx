@@ -6,23 +6,19 @@ import {
   flattenLessons,
   isModuleDone,
   labelsFor,
+  lessonHref,
   pad,
   progressPercent,
 } from "@/lib/utils/learning";
 import ModuleSidebar from "./ModuleSidebar";
 import LessonViewer from "./LessonViewer";
+import { useProgress } from "./ProgressProvider";
 
-export default function LearningEnvironment({
-  course,
-  initialCompleted,
-}: {
-  course: Course;
-  initialCompleted: string[];
-}) {
+export default function LearningEnvironment({ course }: { course: Course }) {
   const lessons = useMemo(() => flattenLessons(course), [course]);
-  const [completed, setCompleted] = useState(() => new Set(initialCompleted));
+  const { completed, markComplete } = useProgress();
   const [index, setIndex] = useState(() => {
-    const first = lessons.findIndex((l) => !new Set(initialCompleted).has(l.id));
+    const first = lessons.findIndex((l) => !completed.has(l.id));
     return first === -1 ? 0 : first;
   });
 
@@ -43,7 +39,7 @@ export default function LearningEnvironment({
 
   function handleComplete() {
     // TODO: save progress through the backend (lib/api) instead of local state only
-    setCompleted((prev) => new Set(prev).add(current.id));
+    markComplete(current.id);
     if (index < lessons.length - 1) setIndex(index + 1);
   }
 
@@ -92,6 +88,7 @@ export default function LearningEnvironment({
             module={mod}
             isFirst={index === 0}
             isComplete={completed.has(current.id)}
+            href={lessonHref(course.slug, mod, current.lessonIndex)}
             onPrev={() => setIndex(index - 1)}
             onComplete={handleComplete}
           />

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from 'next/image';
 import { useState } from "react";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 const links = [
   { label: "Industries", href: "/industries" },
@@ -12,6 +13,7 @@ const links = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const { user, status, logout } = useAuth();
   const close = () => setOpen(false);
 
   return (
@@ -34,10 +36,27 @@ export default function Navbar() {
 
         {/* Desktop actions (right) */}
         <div className="hidden items-center justify-end gap-6 text-sm font-medium text-ink md:flex">
-          <Link href="/login" className="hover:opacity-70">Log in</Link>
-          <Link href="/register" className="rounded-lg bg-lime px-4 py-2 hover:brightness-95">
-            Sign up
-          </Link>
+          {status === "loading" ? (
+            <div className="h-9 w-40" aria-hidden />
+          ) : user ? (
+            <>
+              <Link href="/dashboard" className="hover:opacity-70">My learning</Link>
+              <button
+                type="button"
+                onClick={() => logout()}
+                className="rounded-lg bg-lime px-4 py-2 hover:brightness-95"
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="hover:opacity-70">Log in</Link>
+              <Link href="/register" className="rounded-lg bg-lime px-4 py-2 hover:brightness-95">
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -66,14 +85,32 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
-            <Link href="/login" onClick={close}>Log in</Link>
-            <Link
-              href="/register"
-              onClick={close}
-              className="rounded-lg bg-lime px-4 py-2 text-center"
-            >
-              Sign up
-            </Link>
+            {status === "loading" ? null : user ? (
+              <>
+                <Link href="/dashboard" onClick={close}>My learning</Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    close();
+                    logout();
+                  }}
+                  className="rounded-lg bg-lime px-4 py-2 text-center"
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" onClick={close}>Log in</Link>
+                <Link
+                  href="/register"
+                  onClick={close}
+                  className="rounded-lg bg-lime px-4 py-2 text-center"
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

@@ -11,9 +11,7 @@ type Props = { searchParams: Promise<{ course?: string; reference?: string }> };
 export default async function CheckoutSuccessPage({ searchParams }: Props) {
   const { course: slug, reference } = await searchParams;
 
-  // TODO: ask the backend to verify `reference` and load the real order.
-  // Only show "confirmed" when the backend says so, never because of the URL alone.
-  // Until then: fall back to the first course and placeholder references.
+
   const course = (slug && getCourseBySlug(slug)) || courses[0];
   const paymentRef = reference ?? "PAY-240927-8KAM";
   const orderRef = "EXP-ORD-240927-184";

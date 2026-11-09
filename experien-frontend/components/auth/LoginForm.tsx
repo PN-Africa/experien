@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { login } from "@/lib/api/auth";
+import { useAuth } from "./AuthProvider";
+import { useSlowHint } from "@/hooks/useSlowHint";
 import { ApiError } from "@/lib/api/client";
 import { isEmail } from "@/lib/utils/auth";
 import AuthField from "./AuthField";
@@ -12,9 +13,11 @@ type Errors = Partial<Record<"email" | "password", string>>;
 
 export default function LoginForm({ redirectTo }: { redirectTo: string }) {
   const router = useRouter();
+  const { login } = useAuth();
   const [errors, setErrors] = useState<Errors>({});
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const slow = useSlowHint(submitting);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -37,8 +40,8 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
       router.refresh();
     } catch (err) {
       if (err instanceof ApiError) {
-        setFormError(err.message);
         if (err.fieldErrors) setErrors(err.fieldErrors as Errors);
+        else setFormError(err.message); // e.g. invalid email or password
       } else {
         setFormError("Something went wrong. Please try again.");
       }
@@ -91,6 +94,9 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
       >
         {submitting ? "Logging in..." : "Log in"}
       </button>
+      {slow && (
+        <p className="text-xs text-muted">Waking up the server, this can take a moment...</p>
+      )}
 
       <p className="text-xs text-muted">
         New to Experien?{" "}

@@ -1,4 +1,4 @@
-import type { Course, ModuleContent } from "@/types/Course";
+import type { Course, CourseModule, ModuleContent } from "@/types/Course";
 
 export type LessonRef = {
   id: string;
@@ -68,3 +68,14 @@ export function pickResource(
 
 export const pickQuiz = (course: Course, moduleIndex: number) =>
   course.modules[moduleIndex].contents.find((c) => lessonType(c.meta) === "Quiz");
+
+// Where a lesson opens: videos have their own page, quizzes too, readings and templates share "materials".
+export function lessonHref(slug: string, mod: CourseModule, index: number) {
+  const base = `/learn/${slug}/${mod.id}`;
+  const type = lessonType(mod.contents[index]?.meta ?? "");
+  if (type === "Video") return `${base}/lesson/${index + 1}`;
+  if (type === "Quiz") return `${base}/quiz`;
+  return `${base}/materials`;
+}
+
+export const PASS_MARK = 70; // percent needed to pass a module quiz (our default, confirm with the team)

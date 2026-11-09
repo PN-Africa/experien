@@ -3,45 +3,80 @@ import { ApiError, apiFetch, isMockApi } from "./client";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Endpoint paths and response shapes are drafts until confirmed with the backend team.
-// Assumed: each returns { user }, and the session is an httpOnly cookie set by the backend.
+// ---- Mock-mode session (so reloads keep you "logged in" while the backend isn't connected) ----
+const MOCK_KEY = "experien_mock_user";
+function saveMockUser(u: User) {
+  try { localStorage.setItem(MOCK_KEY, JSON.stringify(u)); } catch {}
+}
+function readMockUser(): User | null {
+  try {
+    const raw = localStorage.getItem(MOCK_KEY);
+    return raw ? (JSON.parse(raw) as User) : null;
+  } catch {
+    return null;
+  }
+}
+function clearMockUser() {
+  try { localStorage.removeItem(MOCK_KEY); } catch {}
+}
+
+// ---- Real backend shape: user has id, name, email. Our User type uses fullName. ----
+type ApiUser = { id: string; name: string; email: string; [k: string]: unknown };
+const toUser = (u: ApiUser): User =>
+  ({ ...(u as object), id: u.id, fullName: u.name, email: u.email }) as User;
 
 export async function login(input: LoginInput): Promise<User> {
   if (isMockApi) {
     await wait(600);
-    return { id: "mock-user", fullName: "Amaka Chukwu", email: input.email };
+    const u: User = { id: "mock-user", fullName: "Amaka Chukwu", email: input.email };
+    saveMockUser(u);
+    return u;
   }
-  const data = await apiFetch<{ user: User }>("/auth/login", { method: "POST", json: input });
-  return data.user;
+  const data = await apiFetch<{ user: ApiUser }>("/auth/login", {
+    method: "POST",
+    json: { email: input.email, password: input.password },
+  });
+  return toUser(data.user);
 }
 
 export async function register(input: RegisterInput): Promise<User> {
   if (isMockApi) {
     await wait(600);
-    return { id: "mock-user", fullName: input.fullName, email: input.email };
+    const u: User = { id: "mock-user", fullName: input.fullName, email: input.email };
+    saveMockUser(u);
+    return u;
   }
-  const data = await apiFetch<{ user: User }>("/auth/register", { method: "POST", json: input });
-  return data.user;
+  // Confirm-password and the terms checkbox are frontend-only, so they are not sent.
+  const data = await apiFetch<{ user: ApiUser }>("/auth/register", {
+    method: "POST",
+    json: { name: input.fullName, email: input.email, password: input.password },
+  });
+  return toUser(data.user);
 }
 
+// The backend has no logout endpoint. The Next proxy clears the cookie.
 export async function logout(): Promise<void> {
-  if (isMockApi) return;
+  if (isMockApi) {
+    clearMockUser();
+    return;
+  }
   await apiFetch("/auth/logout", { method: "POST" });
 }
 
 // Returns the logged-in user, or null when there is no valid session.
 export async function getCurrentUser(): Promise<User | null> {
-  if (isMockApi) return null;
+  if (isMockApi) return readMockUser();
   try {
-    const data = await apiFetch<{ user: User }>("/auth/me");
-    return data.user;
+    const data = await apiFetch<{ user: ApiUser } | ApiUser>("/auth/me");
+    const u = "user" in data ? data.user : data; // unknown whether /me returns { user } or the user itself
+    return toUser(u as ApiUser);
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) return null;
     throw err;
   }
 }
 
-// ---- Password recovery and email verification (draft endpoints, confirm with the backend) ----
+// ---- Not in the backend yet (no endpoints in the docs). Keep on mock behaviour for now. ----
 
 // Should always succeed for the learner, whether or not the email has an account.
 export async function requestPasswordReset(input: { email: string }): Promise<void> {

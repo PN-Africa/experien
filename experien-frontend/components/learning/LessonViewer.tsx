@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { CourseModule } from "@/types/Course";
 import { type LessonRef, labelsFor, lessonDetail, lessonType, pad } from "@/lib/utils/learning";
 
@@ -6,11 +7,12 @@ type Props = {
   module: CourseModule;
   isFirst: boolean;
   isComplete: boolean;
+  href: string; // page that opens this lesson
   onPrev: () => void;
   onComplete: () => void;
 };
 
-export default function LessonViewer({ lesson, module, isFirst, isComplete, onPrev, onComplete }: Props) {
+export default function LessonViewer({ lesson, module, isFirst, isComplete, href, onPrev, onComplete }: Props) {
   const type = lessonType(lesson.meta);
   const labels = labelsFor(lesson.meta);
   const notes = module.contents.find((c) => lessonType(c.meta) === "Reading");
@@ -76,10 +78,9 @@ export default function LessonViewer({ lesson, module, isFirst, isComplete, onPr
         >
           Previous lesson
         </button>
-        {/* TODO: open the video / document / quiz for this lesson */}
-        <button type="button" className="rounded-lg bg-ink px-4 py-2 text-xs font-medium text-[#F5F2E9]">
+        <Link href={href} className="rounded-lg bg-ink px-4 py-2 text-xs font-medium text-[#F5F2E9]">
           {labels.cta}
-        </button>
+        </Link>
         <button
           type="button"
           onClick={onComplete}

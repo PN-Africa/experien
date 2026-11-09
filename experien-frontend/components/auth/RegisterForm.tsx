@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { register } from "@/lib/api/auth";
+import { useAuth } from "./AuthProvider";
+import { useSlowHint } from "@/hooks/useSlowHint";
 import { ApiError } from "@/lib/api/client";
 import { REQUIRE_EMAIL_VERIFICATION, isEmail, isStrongPassword } from "@/lib/utils/auth";
 import AuthField from "./AuthField";
@@ -12,9 +13,11 @@ type Errors = Partial<Record<"fullName" | "email" | "password" | "confirmPasswor
 
 export default function RegisterForm({ redirectTo }: { redirectTo: string }) {
   const router = useRouter();
+  const { register } = useAuth();
   const [errors, setErrors] = useState<Errors>({});
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const slow = useSlowHint(submitting);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -48,8 +51,13 @@ export default function RegisterForm({ redirectTo }: { redirectTo: string }) {
       router.refresh();
     } catch (err) {
       if (err instanceof ApiError) {
-        setFormError(err.message);
-        if (err.fieldErrors) setErrors(err.fieldErrors as Errors);
+        if (err.fieldErrors) {
+          const fe = { ...err.fieldErrors };
+          if (fe.name) fe.fullName = fe.name; // backend says "name", this form says "fullName"
+          setErrors(fe as Errors);
+        } else {
+          setFormError(err.message); // e.g. 409: email already registered
+        }
       } else {
         setFormError("Something went wrong. Please try again.");
       }
@@ -125,6 +133,9 @@ export default function RegisterForm({ redirectTo }: { redirectTo: string }) {
       >
         {submitting ? "Creating account..." : "Create account"}
       </button>
+      {slow && (
+        <p className="text-xs text-muted">Waking up the server, this can take a moment...</p>
+      )}
 
       <p className="text-xs text-muted">
         Already have an account?{" "}

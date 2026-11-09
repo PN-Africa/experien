@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Course } from "@/types/Course";
 import { pad } from "@/lib/utils/learning";
 
@@ -39,6 +40,9 @@ export default function ModuleSidebar({ course, statuses, currentModule, pct, on
       <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[#E4E9E2]">
         <div className="h-full rounded-full bg-lime" style={{ width: `${pct}%` }} />
       </div>
+      <Link href={`/learn/${course.slug}/progress`} className="mt-4 inline-block text-xs font-medium underline">
+        View course progress
+      </Link>
     </aside>
   );
 }
