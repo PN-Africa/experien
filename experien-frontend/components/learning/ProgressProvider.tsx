@@ -14,7 +14,7 @@ type Ctx = {
 const ProgressContext = createContext<Ctx | null>(null);
 
 // MOCK progress, kept in memory (resets on full page refresh).
-// TODO: save through the backend (lib/api) instead.
+//  save through the backend (lib/api) instead.
 export default function ProgressProvider({
   initialCompleted,
   initialScores,

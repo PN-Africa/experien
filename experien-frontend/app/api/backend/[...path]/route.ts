@@ -43,13 +43,13 @@ async function handler(
   }
 
   const text = await upstream.text();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   let body: any = null;
   try {
     body = JSON.parse(text);
   } catch {}
 
-  // Move the token out of the body and into an httpOnly cookie.
+  
   let newToken: string | undefined;
   if (upstream.ok && AUTH_ENTRY.includes(endpoint) && body?.data?.token) {
     newToken = body.data.token;

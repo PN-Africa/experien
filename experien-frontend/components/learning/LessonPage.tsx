@@ -15,7 +15,7 @@ type Props = {
   content: LessonContent;
 };
 
-// Estimated colour, check against Figma: dark lime button
+// color check
 const LIME_DARK = "#B0C45A";
 
 export default function LessonPage({ slug, mod, moduleIndex, lessonIndex, content }: Props) {

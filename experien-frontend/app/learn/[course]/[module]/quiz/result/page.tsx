@@ -13,7 +13,7 @@ export default function Page({ params }: Props) {
 
   const mod = course.modules[moduleIndex];
   const questions = getQuiz(mod.id);
-  // MOCK: each question points back at a lesson of this module (replace with real links from the backend).
+  // MOCK: each question points back at a lesson of this module 
   const lessons = mod.contents.map((c, i) => ({ c, i })).filter(({ c }) => lessonType(c.meta) !== "Quiz");
   const reviews = questions.map((_, qi) => {
     const { i } = lessons[qi % lessons.length];

@@ -18,7 +18,7 @@ import DashboardLinks from "@/components/dashboard/DashboardLinks";
 export const metadata: Metadata = { title: "My learning | Experien" };
 
 export default function DashboardPage() {
-  // TODO: require login, then load the learner and their enrolments from the backend.
+  //  require login, then load the learner and their enrolments from the backend.
   const firstName = learner.name.split(" ")[0];
   const enrolment = enrolments[0];
   const course = enrolment && getCourseBySlug(enrolment.courseSlug);

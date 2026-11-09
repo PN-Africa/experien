@@ -94,7 +94,7 @@ export default function CheckoutDetails({ course }: { course: Course }) {
     if (Object.keys(next).length > 0) return;
 
     // TEMPORARY: Paystack popup straight from the browser, for testing.
-    // TODO: replace with the backend's payment-initiation endpoint + server-side verification.
+    
     const publicKey = process.env.NEXT_PUBLIC_PAYMENT_PUBLIC_KEY;
     if (!window.PaystackPop || !publicKey) {
       setPayError("Payment isn't available right now. Please try again in a moment.");
@@ -103,6 +103,8 @@ export default function CheckoutDetails({ course }: { course: Course }) {
 
     setPayError("");
     setPaying(true);
+
+    console.log("key check:", publicKey.slice(0, 8), publicKey.length);
 
     const handler = window.PaystackPop.setup({
       key: publicKey,

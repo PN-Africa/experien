@@ -13,6 +13,6 @@ export function generateMetadata({ params }: Props): Metadata {
 export default function LearnPage({ params }: Props) {
   const course = getCourseBySlug(params.course);
   if (!course) notFound();
-  // TODO: require login + an active enrolment (otherwise redirect to /checkout/[slug]).
+  // require login + an active enrolment (otherwise redirect to /checkout/[slug]).
   return <LearningEnvironment course={course} />;
 }

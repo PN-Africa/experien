@@ -41,7 +41,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.fieldErrors) setErrors(err.fieldErrors as Errors);
-        else setFormError(err.message); // e.g. invalid email or password
+        else setFormError(err.message); // invalid email or password
       } else {
         setFormError("Something went wrong. Please try again.");
       }

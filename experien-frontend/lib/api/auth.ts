@@ -99,7 +99,7 @@ export async function resetPassword(input: { token: string; password: string }):
 export async function verifyEmail(input: { email: string; code: string }): Promise<void> {
   if (isMockApi) {
     await wait(600);
-    // Mock mode: any code works except 000000, so you can test the error state.
+    // any code works except 000000, so you can test the error state.
     if (input.code === "000000") throw new ApiError("That code is incorrect or has expired.", 400);
     return;
   }

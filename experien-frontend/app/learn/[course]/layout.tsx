@@ -11,7 +11,7 @@ export default function LearnLayout({
   params: { course: string };
 }) {
   if (!getCourseBySlug(params.course)) notFound();
-  // TODO: load this learner's real enrolment from the backend.
+  //  load this learner's real enrolment from the backend.
   const enrolment = enrolments.find((e) => e.courseSlug === params.course);
   return (
     <ProgressProvider

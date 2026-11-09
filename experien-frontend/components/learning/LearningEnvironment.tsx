@@ -38,7 +38,7 @@ export default function LearningEnvironment({ course }: { course: Course }) {
   }
 
   function handleComplete() {
-    // TODO: save progress through the backend (lib/api) instead of local state only
+    // save progress through the backend (lib/api) instead of local state only
     markComplete(current.id);
     if (index < lessons.length - 1) setIndex(index + 1);
   }

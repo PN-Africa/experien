@@ -1,16 +1,9 @@
-// The single API client. Every request goes through apiFetch so the base URL,
-// headers and error handling live in one place.
-// Backend responses are { success: true, data } or { success: false, message, errors? }.
-
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
-
-// No base URL set = mock mode, so the api functions return mock responses.
 export const isMockApi = BASE_URL === "";
 
 export class ApiError extends Error {
   status: number;
   fieldErrors?: Record<string, string>;
-
   constructor(message: string, status: number, fieldErrors?: Record<string, string>) {
     super(message);
     this.name = "ApiError";
@@ -19,7 +12,7 @@ export class ApiError extends Error {
   }
 }
 
-// Backend sends errors: [{ field, message }]. Also handles { field: message } and { field: [messages] }.
+// Handles { field: message }, { field: [messages] } and [{ field|path, message }].
 function normalizeErrors(errors: unknown): Record<string, string> | undefined {
   if (!errors) return undefined;
   const out: Record<string, string> = {};
@@ -59,9 +52,8 @@ export async function apiFetch<T>(path: string, options: Options = {}): Promise<
   const body = await res.json().catch(() => null);
 
   if (!res.ok || body?.success === false) {
-    // A 401 on a protected (non-auth) call means the session is gone.
-    // /auth/* calls handle their own 401s (wrong password, or "no session" from /auth/me on a public page).
-    if (res.status === 401 && typeof window !== "undefined" && !path.startsWith("/auth/")) {
+    // A 401 on a protected call means the session is gone. Auth endpoints handle their own 401s.
+    if (res.status === 401 && typeof window !== "undefined" && !path.startsWith("/auth/login")) {
       window.dispatchEvent(new Event("auth:unauthorized"));
     }
     throw new ApiError(

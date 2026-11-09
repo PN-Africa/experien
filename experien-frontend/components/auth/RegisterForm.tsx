@@ -53,7 +53,7 @@ export default function RegisterForm({ redirectTo }: { redirectTo: string }) {
       if (err instanceof ApiError) {
         if (err.fieldErrors) {
           const fe = { ...err.fieldErrors };
-          if (fe.name) fe.fullName = fe.name; // backend says "name", this form says "fullName"
+          if (fe.name) fe.fullName = fe.name; 
           setErrors(fe as Errors);
         } else {
           setFormError(err.message); // e.g. 409: email already registered

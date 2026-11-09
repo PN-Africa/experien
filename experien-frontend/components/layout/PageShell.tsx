@@ -10,6 +10,9 @@ export default function PageShell({
 }) {
   const pathname = usePathname();
 
+  // Admin pages have their own shell (sidebar + top bar) and no page padding.
+  if (pathname.startsWith("/admin")) return <main className="flex-1">{children}</main>;
+
   const fullWidth =
     pathname === "/" ||
     pathname.startsWith("/industries") ||

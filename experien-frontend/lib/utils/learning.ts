@@ -78,4 +78,4 @@ export function lessonHref(slug: string, mod: CourseModule, index: number) {
   return `${base}/materials`;
 }
 
-export const PASS_MARK = 70; // percent needed to pass a module quiz (our default, confirm with the team)
+export const PASS_MARK = 70; // percent needed to pass a module quiz (default)

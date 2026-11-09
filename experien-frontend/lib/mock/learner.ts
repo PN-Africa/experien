@@ -1,4 +1,4 @@
-// Temporary mock learner data. Replace with the logged-in learner + enrolments from the backend.
+// Temporary mock learner data. to be replaced the backend.
 export const learner = { name: "Amaka Chukwu" };
 
 export type LearnerEnrolment = {
