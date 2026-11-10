@@ -1,3 +1,5 @@
+import FirstName from "@/components/auth/FirstName";
+
 export type Stat = { label: string; value: string; sub: string };
 
 export default function DashboardHero({ firstName, stats }: { firstName: string; stats: Stat[] }) {
@@ -5,7 +7,7 @@ export default function DashboardHero({ firstName, stats }: { firstName: string;
     <section className="bg-white text-ink">
       <div className="mx-auto max-w-[1400px] px-6 py-10 md:px-16 md:py-12">
         <p className="text-[11px] font-semibold uppercase tracking-wider">My learning</p>
-        <h1 className="mt-3 text-3xl font-medium tracking-tight md:text-5xl">Welcome back, {firstName}.</h1>
+        <h1 className="mt-3 text-3xl font-medium tracking-tight md:text-5xl">Welcome back, <FirstName fallback={firstName} />.</h1>
         <p className="mt-3 max-w-2xl text-sm text-muted md:text-base">
           Continue your active course, review your progress and open the next learning activity.
         </p>

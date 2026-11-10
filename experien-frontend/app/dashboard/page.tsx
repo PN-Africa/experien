@@ -14,11 +14,12 @@ import {
 import DashboardHero, { type Stat } from "@/components/dashboard/DashboardHero";
 import ActiveCourse from "@/components/dashboard/ActiveCourse";
 import DashboardLinks from "@/components/dashboard/DashboardLinks";
+import FirstName from "@/components/auth/FirstName";
 
 export const metadata: Metadata = { title: "My learning | Experien" };
 
 export default function DashboardPage() {
-  //  require login, then load the learner and their enrolments from the backend.
+  // TODO: require login, then load the learner and their enrolments from the backend.
   const firstName = learner.name.split(" ")[0];
   const enrolment = enrolments[0];
   const course = enrolment && getCourseBySlug(enrolment.courseSlug);
@@ -27,7 +28,7 @@ export default function DashboardPage() {
     return (
       <section className="bg-white text-ink">
         <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-16">
-          <h1 className="text-3xl font-medium tracking-tight">Welcome, {firstName}.</h1>
+          <h1 className="text-3xl font-medium tracking-tight">Welcome, <FirstName fallback={firstName} />.</h1>
           <p className="mt-3 text-sm text-muted">You haven&apos;t enrolled in a course yet.</p>
           <Link
             href="/industries"
