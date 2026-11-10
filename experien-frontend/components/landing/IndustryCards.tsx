@@ -10,9 +10,9 @@ const labels: Record<string, string> = {
 };
 
 const images: Record<string, string> = {
-  technology: "/technology.png",
-  construction: "/construction.png",
-  manufacturing: "/manufacturing.png",
+  technology: "/Technology.png",
+  construction: "/Construction.png",
+  manufacturing: "/Manufacturing.png",
 };
 
 export default function IndustryCards() {
