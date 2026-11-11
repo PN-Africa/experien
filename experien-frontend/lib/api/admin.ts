@@ -6,12 +6,15 @@ import { apiFetch, isMockApi } from "./client";
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export async function getAdminCourses(): Promise<AdminCourse[]> {
-  if (isMockApi) {
+  // if (isMockApi) {
+  //   await wait(300);
+  //   return mockCourses;
+  // }
+  // //   the path and response shape to be confirmed with the backend 
+  // return apiFetch<AdminCourse[]>("/admin/courses");
+
     await wait(300);
-    return mockCourses;
-  }
-  //   the path and response shape to be confirmed with the backend 
-  return apiFetch<AdminCourse[]>("/admin/courses");
+  return mockCourses;
 }
 
 export async function getEnrolmentSummary(): Promise<EnrolmentSummary> {
