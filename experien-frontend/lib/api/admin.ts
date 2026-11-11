@@ -18,12 +18,15 @@ export async function getAdminCourses(): Promise<AdminCourse[]> {
 }
 
 export async function getEnrolmentSummary(): Promise<EnrolmentSummary> {
-  if (isMockApi) {
+  // if (isMockApi) {
+  //   await wait(300);
+  //   return mockSummary;
+  // }
+  // // confirm with the backend team (counts may come from the list endpoint instead)
+  // return apiFetch<EnrolmentSummary>("/admin/enrolments/summary");
+
     await wait(300);
-    return mockSummary;
-  }
-  // confirm with the backend team (counts may come from the list endpoint instead)
-  return apiFetch<EnrolmentSummary>("/admin/enrolments/summary");
+  return mockSummary;
 }
 
 export async function getEnrolmentCourses(): Promise<string[]> {
