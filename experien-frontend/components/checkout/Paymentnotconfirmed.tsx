@@ -5,15 +5,15 @@ export default function PaymentNotConfirmed({ slug, paymentRef }: { slug: string
     <div className="flex flex-col gap-5 rounded-2xl border border-line bg-white p-6 md:flex-row md:items-center md:justify-between">
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-          If payment is not confirmed
+          Payment not completed
         </p>
         <h2 className="mt-2 text-xl font-medium tracking-tight">
-          Your access stays inactive until payment is confirmed.
+          Your course access remains inactive.
         </h2>
         <p className="mt-2 max-w-xl text-xs text-muted">
-          Retry the payment or check the status of an existing transaction. Experien should not
-          create a duplicate enrolment.
+          You can return to checkout to try again. If you believe you were charged, contact support and provide your payment reference before making another payment.
         </p>
+        <p className="mt-2 break-all text-[11px] text-muted">Reference: {paymentRef}</p>
       </div>
       <div className="flex flex-wrap gap-3 md:flex-col">
         <Link
@@ -21,12 +21,6 @@ export default function PaymentNotConfirmed({ slug, paymentRef }: { slug: string
           className="rounded-lg bg-lime px-4 py-2 text-center text-xs font-medium text-ink hover:brightness-95"
         >
           Retry payment
-        </Link>
-        <Link
-          href={`/checkout/success?course=${slug}&reference=${encodeURIComponent(paymentRef)}`}
-          className="rounded-lg border border-ink px-4 py-2 text-center text-xs font-medium hover:bg-[#F6F8F3]"
-        >
-          Check payment status
         </Link>
       </div>
     </div>

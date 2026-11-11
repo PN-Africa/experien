@@ -35,9 +35,15 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
 
     setSubmitting(true);
     try {
-      await login({ email, password, remember });
-      router.push(redirectTo);
-      router.refresh();
+    const user = await login({ email, password, remember });
+
+if (user.role === "admin") {
+  router.push("/admin");
+} else {
+  router.push(redirectTo);
+}
+
+router.refresh();
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.fieldErrors) setErrors(err.fieldErrors as Errors);

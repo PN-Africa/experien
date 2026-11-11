@@ -21,14 +21,19 @@ function clearMockUser() {
 }
 
 // ---- Real backend shape: user has id, name, email. Our User type uses fullName. ----
-type ApiUser = { id: string; name: string; email: string; [k: string]: unknown };
+type ApiUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "learner";
+};
 const toUser = (u: ApiUser): User =>
   ({ ...(u as object), id: u.id, fullName: u.name, email: u.email }) as User;
 
 export async function login(input: LoginInput): Promise<User> {
   if (isMockApi) {
     await wait(600);
-    const u: User = { id: "mock-user", fullName: "Amaka Chukwu", email: input.email };
+    const u: User = { id: "mock-user", fullName: "Amaka Chukwu", email: input.email,  role: "learner" };
     saveMockUser(u);
     return u;
   }
@@ -42,7 +47,12 @@ export async function login(input: LoginInput): Promise<User> {
 export async function register(input: RegisterInput): Promise<User> {
   if (isMockApi) {
     await wait(600);
-    const u: User = { id: "mock-user", fullName: input.fullName, email: input.email };
+   const u: User = {
+  id: "mock-user",
+  fullName: input.fullName,
+  email: input.email,
+  role: "learner",
+};
     saveMockUser(u);
     return u;
   }

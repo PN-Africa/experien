@@ -4,7 +4,7 @@ import { TOKEN_COOKIE } from "@/lib/auth/constants";
 
 export const maxDuration = 60; // Render cold starts can be slow
 
-const BACKEND = process.env.BACKEND_URL!;
+const BACKEND = process.env.BACKEND_URL?.replace(/\/+$/, "");
 const AUTH_ENTRY = ["/auth/login", "/auth/register"];
 
 async function handler(
@@ -20,6 +20,13 @@ async function handler(
     const res = NextResponse.json({ success: true, data: null });
     res.cookies.delete(TOKEN_COOKIE);
     return res;
+  }
+
+  if (!BACKEND) {
+    return NextResponse.json(
+      { success: false, message: "The backend URL is not configured on the server." },
+      { status: 500 }
+    );
   }
 
   const hasBody = !["GET", "HEAD"].includes(req.method);

@@ -38,6 +38,10 @@ export async function apiFetch<T>(path: string, options: Options = {}): Promise<
   try {
     res = await fetch(`${BASE_URL}${path}`, {
       ...rest,
+      // The same-origin Vercel proxy reads the HttpOnly session cookie and
+      // forwards its token to the backend as an Authorization header.
+      credentials: "same-origin",
+      cache: "no-store",
       headers: {
         Accept: "application/json",
         ...(json !== undefined ? { "Content-Type": "application/json" } : {}),
