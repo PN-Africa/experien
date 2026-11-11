@@ -14,7 +14,7 @@ export default function CourseHero({ selected }: { selected: Pathway }) {
             Find the right project-management course for your {selected.name} path.
           </h1>
           <p className="mt-5 max-w-2xl text-base font-extralight  leading-snug">
-           Search the course currently available for Technology and review the format, curriculum, practical materials and price before you enrol.
+           Search the course currently available for {selected.name} and review the format, curriculum, practical materials and price before you enrol.
           </p>
           <div className="mt-6 flex flex-wrap gap-2 text-xs">
             {[selected.name, selected.pathway, "Course available"].map((c) => (

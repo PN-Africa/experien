@@ -7,10 +7,10 @@ export type CourseModule = {
   id: string;
   title: string;
   shortTitle: string; // used in the curriculum page sidebar
-  summary: string; // shown when the module is expanded
+  summary: string; 
   lessons: number;
   items: string[]; // what the module contains, shown in the curriculum preview
-  contents: ModuleContent[]; // lesson-level list for the full curriculum page
+  contents: ModuleContent[]; 
 };
 
 export type Course = {
@@ -18,7 +18,7 @@ export type Course = {
   slug: string;
   title: string;
   industry: string;
-  summary: string; // short line under the title in the hero
+  summary: string; 
   overview: string; // "What this course helps you do"
   objectives: string[];
   duration: string;
@@ -26,4 +26,18 @@ export type Course = {
   requirements: string[]; // [0] = title, [1] = note
   price: number; // in naira
   modules: CourseModule[];
+};
+
+
+
+export type CourseCard = {
+  slug: string;
+  title: string;
+  overview: string;
+  industryName: string;
+  durationWeeks: number;
+  format: string;
+  price: number; // naira
+  moduleCount: number;
+  lessonCount: number;
 };

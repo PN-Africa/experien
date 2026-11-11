@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Pathway } from "./pathways";
 import { label, wrap } from "./styles";
+import { courseChips } from "@/lib/utils/course";
 
 export default function SelectionSummary({ selected }: { selected: Pathway }) {
   return (
@@ -29,7 +30,7 @@ export default function SelectionSummary({ selected }: { selected: Pathway }) {
             <p className="mt-4 max-w-2xl text-base leading-snug">{selected.courseSummary}</p>
 
             <div className="mt-5 flex flex-wrap gap-2 text-xs text-ink ">
-              {["6 weeks", "Self-paced online", "4 modules", "₦75,000"].map((t) => (
+   {courseChips(selected.courses?.[0]).map((t) => (
                 <span key={t} className="rounded-xl bg-white px-3 py-1.5">
                   {t}
                 </span>

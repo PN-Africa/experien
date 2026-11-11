@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { getCourseBySlug } from "@/lib/mock/Courses";
 import type { CourseModule } from "@/types/Course";
 import { enrolments, learner } from "@/lib/mock/learner";
+import LiveDashboard from "@/components/dashboard/LiveDashboard";
+import { isMockApi } from "@/lib/api/client";
 import {
   completedModuleCount,
   nextLesson,
@@ -19,7 +21,8 @@ import FirstName from "@/components/auth/FirstName";
 export const metadata: Metadata = { title: "My learning | Experien" };
 
 export default function DashboardPage() {
-  // TODO: require login, then load the learner and their enrolments from the backend.
+  if (!isMockApi) return <LiveDashboard />;
+  //  require login, then load the learner and their enrolments from the backend.
   const firstName = learner.name.split(" ")[0];
   const enrolment = enrolments[0];
   const course = enrolment && getCourseBySlug(enrolment.courseSlug);

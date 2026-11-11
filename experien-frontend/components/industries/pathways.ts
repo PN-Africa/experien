@@ -1,3 +1,5 @@
+import type { CourseCard } from "@/types/Course";
+
 export type Pathway = {
   id: string;
   name: string;
@@ -10,6 +12,7 @@ export type Pathway = {
   whyIntro: string;
   why: string[];
   situations: string;
+    courses?: CourseCard[]; 
 };
 
 export const pathways: Pathway[] = [

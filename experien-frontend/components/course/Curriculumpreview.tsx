@@ -21,7 +21,7 @@ export default function CurriculumPreview({ modules, slug }: { modules: CourseMo
       <div className="mx-auto max-w-[1400px] px-6 py-12 md:px-16 md:py-14">
         <p className="text-xs font-semibold uppercase tracking-wider">Curriculum preview</p>
         <h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">
-          Four modules built around the project lifecycle
+          {modules.length}
         </h2>
         <p className="mt-3 max-w-2xl text-sm text-muted">
           Review the learning sequence before you enrol. Each module combines lessons, practical

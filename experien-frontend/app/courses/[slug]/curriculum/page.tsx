@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCourseBySlug } from "@/lib/mock/Courses";
+import { getCourse } from "@/lib/api/catalogue-server";
 import CurriculumHero from "@/components/course/Curriculumhero";
 import CurriculumExplorer from "@/components/course/Curriculumexplorer";
 import LearningMaterials from "@/components/course/Learningmaterials";
@@ -10,13 +10,13 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const course = getCourseBySlug(slug);
+  const course = await getCourse(slug)
   return { title: course ? `${course.title} curriculum | Experien` : "Course not found" };
 }
 
 export default async function CurriculumPage({ params }: Props) {
   const { slug } = await params;
-  const course = getCourseBySlug(slug);
+ const course = await getCourse(slug)
   if (!course) notFound();
 
   return (

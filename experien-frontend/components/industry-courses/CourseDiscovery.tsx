@@ -13,8 +13,8 @@ export default function CourseDiscovery({ selected }: { selected: Pathway }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
 
-  const matches =
-    search.trim() === "" || selected.courseTitle.toLowerCase().includes(search.trim().toLowerCase());
+   const q = search.trim().toLowerCase();
+  const visible = (selected.courses ?? []).filter((c) => q === "" || c.title.toLowerCase().includes(q));
 
   return (
     <section className="bg-white">
@@ -99,16 +99,16 @@ export default function CourseDiscovery({ selected }: { selected: Pathway }) {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <p className="text-lg font-medium">
-                  {matches ? "1 course available" : "0 courses available"}
+                  {visible.length} {visible.length === 1 ? "course" : "courses"} available
                 </p>
                 <p className="text-sm text-muted">{selected.name} · {selected.pathway}</p>
               </div>
               <span className="rounded-lg bg-[#EDF5ED] px-3 py-1 text-xs">Best match</span>
             </div>
 
-            <div className="mt-4">
-              {matches ? (
-                <CourseResultCard selected={selected} />
+                        <div className="mt-4 space-y-4">
+              {visible.length > 0 ? (
+                visible.map((c) => <CourseResultCard key={c.slug} selected={selected} course={c} />)
               ) : (
                 <p className="rounded-2xl border border-line p-8 text-center text-sm text-muted">
                   No courses match your search. Click Reset filters.
@@ -117,8 +117,8 @@ export default function CourseDiscovery({ selected }: { selected: Pathway }) {
             </div>
 
             <p className="mt-4 text-xs text-muted">
-              This MVP currently includes one {selected.name} course path. Additional courses can be
-              represented in this design.
+              {selected.name} currently has {(selected.courses ?? []).length}{" "}
+              {(selected.courses ?? []).length === 1 ? "course" : "courses"}.
             </p>
           </div>
         </div>
