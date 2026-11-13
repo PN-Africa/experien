@@ -96,7 +96,7 @@ export default function AdminEnrolments() {
               <h2 className="mt-2 text-xl font-medium">{selected.learner}</h2>
               <p className="mt-1 text-sm text-muted">{selected.course}</p>
               <dl className="mt-4 space-y-3 text-xs">
-                {[["Payment status", selected.paymentStatus], ["Transaction ref.", selected.transactionRef], ["Order reference", selected.orderRef], ["Course access", selected.accessActive ? "Active" : "Not activated"], ["Amount", naira(selected.amount)]].map(([k, v]) => (
+                {[["Payment status", selected.paymentStatus], ["Payment reference", selected.transactionRef], ["Learner email", selected.learnerEmail ?? "—"], ["Course access", selected.accessActive ? "Active" : "Not activated"], ["Amount", naira(selected.amount)]].map(([k, v]) => (
                   <div key={k} className="flex justify-between gap-3">
                     <dt className="text-muted">{k}</dt>
                     <dd className="font-medium">{v}</dd>

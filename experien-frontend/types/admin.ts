@@ -18,6 +18,7 @@ export type AdminCourse = {
 export type EnrolmentRecord = {
   id: string;
   learner: string;
+    learnerEmail?: string;
   course: string;
   paymentStatus: PaymentStatus;
   transactionRef: string;
@@ -33,4 +34,14 @@ export type EnrolmentFilters = {
   payment: "All" | PaymentStatus;
   course: string; // "All" or a course name
   access: "All" | "Active" | "Not activated";
+};
+
+
+export type AdminOverview = {
+  industries: number;
+  publishedCourses: number;
+  draftCourses: number;
+  learners: number;
+  activeEnrolments: number;
+  payments: { successful: number; pending: number; failed: number };
 };

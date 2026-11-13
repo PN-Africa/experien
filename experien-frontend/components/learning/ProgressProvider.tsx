@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { apiFetch, isMockApi } from "@/lib/api/client";
 
 type Ctx = {
   completed: Set<string>;
@@ -13,15 +14,18 @@ type Ctx = {
 
 const ProgressContext = createContext<Ctx | null>(null);
 
-// MOCK progress, kept in memory (resets on full page refresh).
-//  save through the backend (lib/api) instead.
+// Lessons are saved through the backend. Quiz attempts are still kept in memory (quizzes come later).
 export default function ProgressProvider({
   initialCompleted,
   initialScores,
+  courseSlug,
+  lessonSlugs,
   children,
 }: {
   initialCompleted: string[];
   initialScores: Record<string, number>;
+  courseSlug?: string; // set when talking to the real backend
+  lessonSlugs?: Record<string, string>; // lesson id -> backend lesson slug
   children: React.ReactNode;
 }) {
   const [completed, setCompleted] = useState(() => new Set(initialCompleted));
@@ -32,7 +36,28 @@ export default function ProgressProvider({
     return v.length ? v[v.length - 1] : null;
   });
 
-  const markComplete = useCallback((id: string) => setCompleted((p) => new Set(p).add(id)), []);
+  const markComplete = useCallback(
+    (id: string) => {
+      if (completed.has(id)) return; // already done, nothing to save
+      setCompleted((p) => new Set(p).add(id));
+
+      const lesson = lessonSlugs?.[id];
+      if (isMockApi || !courseSlug || !lesson) return; // mock mode, or a quiz item
+      apiFetch(
+        `/courses/${encodeURIComponent(courseSlug)}/lessons/${encodeURIComponent(lesson)}/complete`,
+        { method: "POST" }
+      ).catch(() => {
+        // Saving failed: undo the tick so the screen matches the backend.
+        setCompleted((p) => {
+          const n = new Set(p);
+          n.delete(id);
+          return n;
+        });
+      });
+    },
+    [completed, courseSlug, lessonSlugs]
+  );
+
   const saveAttempt = useCallback((m: string, answers: number[], pct: number) => {
     setAttempts((p) => ({ ...p, [m]: answers }));
     setScores((p) => ({ ...p, [m]: pct }));

@@ -1,22 +1,20 @@
-import { notFound } from "next/navigation";
-import { getCourseBySlug } from "@/lib/mock/Courses";
-import { enrolments } from "@/lib/mock/learner";
+import { getLearningCourse } from "@/lib/api/learning-server";
 import ProgressProvider from "@/components/learning/ProgressProvider";
 
-export default function LearnLayout({
+export default async function LearnLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: { course: string };
 }) {
-  if (!getCourseBySlug(params.course)) notFound();
-  //  load this learner's real enrolment from the backend.
-  const enrolment = enrolments.find((e) => e.courseSlug === params.course);
+  const data = await getLearningCourse(params.course);
   return (
     <ProgressProvider
-      initialCompleted={enrolment?.completedLessonIds ?? []}
-      initialScores={enrolment?.quizScores ?? {}}
+      initialCompleted={data.completedIds}
+      initialScores={data.scores}
+      courseSlug={data.live ? data.course.slug : undefined}
+      lessonSlugs={data.lessonSlugs}
     >
       {children}
     </ProgressProvider>

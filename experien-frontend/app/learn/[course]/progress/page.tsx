@@ -1,17 +1,12 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCourseBySlug } from "@/lib/mock/Courses";
+import { getLearningCourse } from "@/lib/api/learning-server";
 import CourseProgress from "@/components/learning/CourseProgress";
 
 type Props = { params: { course: string } };
 
-export function generateMetadata({ params }: Props): Metadata {
-  const course = getCourseBySlug(params.course);
-  return { title: course ? `Progress: ${course.title} | Experien` : "Course not found" };
-}
+export const metadata: Metadata = { title: "Course progress | Experien" };
 
-export default function Page({ params }: Props) {
-  const course = getCourseBySlug(params.course);
-  if (!course) notFound();
+export default async function Page({ params }: Props) {
+  const { course } = await getLearningCourse(params.course);
   return <CourseProgress course={course} />;
 }

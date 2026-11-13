@@ -1,18 +1,12 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getCourseBySlug } from "@/lib/mock/Courses";
+import { getLearningCourse } from "@/lib/api/learning-server";
 import LearningEnvironment from "@/components/learning/LearningEnvironment";
 
 type Props = { params: { course: string } };
 
-export function generateMetadata({ params }: Props): Metadata {
-  const course = getCourseBySlug(params.course);
-  return { title: course ? `Learn: ${course.title} | Experien` : "Course not found" };
-}
+export const metadata: Metadata = { title: "Course learning | Experien" };
 
-export default function LearnPage({ params }: Props) {
-  const course = getCourseBySlug(params.course);
-  if (!course) notFound();
-  // require login + an active enrolment (otherwise redirect to /checkout/[slug]).
+export default async function LearnPage({ params }: Props) {
+  const { course } = await getLearningCourse(params.course);
   return <LearningEnvironment course={course} />;
 }

@@ -91,8 +91,8 @@ export default function LessonPage({ slug, mod, moduleIndex, lessonIndex, conten
     className="mt-4 aspect-video w-full rounded-xl bg-black"
   />
 ) : (
-  <div className="mt-4 flex h-48 items-center justify-center rounded-xl bg-[#F5F2E9] md:h-72">
-    <span className="flex h-14 w-14 items-center justify-center rounded-full bg-lime text-lg text-ink">▶</span>
+  <div className="mt-4 flex h-48 items-center justify-center rounded-xl bg-[#F5F2E9] px-4 text-center text-sm text-muted md:h-72">
+    The video for this lesson isn&apos;t available yet.
   </div>
 )}
               </div>

@@ -1,18 +1,20 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { getAdminCourses } from "@/lib/api/admin";
 import { useLoad } from "./useLoad";
 import { AdminHeader, Pill, StatCard, naira } from "./AdminUi";
+import { getAdminCourses, getAdminOverview } from "@/lib/api/admin";
 
 const FILTERS = ["All courses", "Published", "Draft"] as const;
 const LIME_DARK = "#B0C45A"; 
 export default function AdminCourses() {
   const load = useCallback(() => getAdminCourses(), []);
-  const { data: courses, error, loading } = useLoad(load);
+  const { data: courses, error, loading } = useLoad(load);  
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All courses");
   const [picked, setPicked] = useState<string | null>(null);
   const [note, setNote] = useState("");
+  const overview = useLoad(getAdminOverview);
+const o = overview.data;
 
   if (loading) return <p className="text-sm text-muted">Loading courses…</p>;
   if (error || !courses) return <p role="alert" className="text-sm text-red-700">{error ?? "Could not load courses."}</p>;
@@ -34,9 +36,9 @@ export default function AdminCourses() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Published courses" value={String(courses.filter((c) => c.status === "Published").length)} sub="Across supported industries" />
-        <StatCard label="Industries" value={String(industries.length)} sub={industries.join(" · ")} />
-        <StatCard label="Draft changes" value={String(drafts)} sub="Needs review" />
+       <StatCard label="Published courses" value={o ? String(o.publishedCourses) : "…"} sub="Across supported industries" />
+<StatCard label="Industries" value={o ? String(o.industries) : "…"} sub={industries.join(" · ")} />
+<StatCard label="Draft changes" value={o ? String(o.draftCourses) : "…"} sub="Needs review" />
         <StatCard label="Course price" value={naira(selected.price)} sub={selected.title} />
       </div>
 

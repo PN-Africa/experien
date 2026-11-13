@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
-import { getCourseBySlug } from "@/lib/mock/Courses";
-import { getQuiz } from "@/lib/mock/lessonContent";
+import { getLearningCourse } from "@/lib/api/learning-server";
+import { getQuiz } from "@/lib/mock/lessonContent"; // quiz questions are still mock (quizzes come later)
 import { lessonId, lessonType } from "@/lib/utils/learning";
 import QuizPage from "@/components/learning/QuizPage";
 
 type Props = { params: { course: string; module: string } };
 
-export default function Page({ params }: Props) {
-  const course = getCourseBySlug(params.course);
-  const moduleIndex = course ? course.modules.findIndex((m) => m.id === params.module) : -1;
-  if (!course || moduleIndex < 0) notFound();
+export default async function Page({ params }: Props) {
+  const { course } = await getLearningCourse(params.course);
+  const moduleIndex = course.modules.findIndex((m) => m.id === params.module);
+  if (moduleIndex < 0) notFound();
 
   const mod = course.modules[moduleIndex];
   const quizIndex = mod.contents.findIndex((c) => lessonType(c.meta) === "Quiz");
