@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 
 import { useMemo, useState } from "react";
 import type { Course } from "@/types/Course";
@@ -8,6 +9,7 @@ import {
   labelsFor,
   lessonHref,
   pad,
+   lessonType,
   progressPercent,
 } from "@/lib/utils/learning";
 import ModuleSidebar from "./ModuleSidebar";
@@ -15,6 +17,8 @@ import LessonViewer from "./LessonViewer";
 import { useProgress } from "./ProgressProvider";
 
 export default function LearningEnvironment({ course }: { course: Course }) {
+  
+  const router = useRouter();
   const lessons = useMemo(() => flattenLessons(course), [course]);
   const { completed, markComplete } = useProgress();
   const [index, setIndex] = useState(() => {
@@ -36,9 +40,12 @@ export default function LearningEnvironment({ course }: { course: Course }) {
     const target = inModule.find((l) => !completed.has(l.id)) ?? inModule[0];
     setIndex(lessons.indexOf(target));
   }
-
   function handleComplete() {
-    // save progress through the backend (lib/api) instead of local state only
+    // A quiz is finished by submitting it, not by ticking "Mark complete": open the quiz instead.
+    if (lessonType(current.meta) === "Quiz") {
+      router.push(lessonHref(course.slug, mod, current.lessonIndex));
+      return;
+    }
     markComplete(current.id);
     if (index < lessons.length - 1) setIndex(index + 1);
   }

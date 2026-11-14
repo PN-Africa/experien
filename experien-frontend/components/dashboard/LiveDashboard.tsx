@@ -139,7 +139,7 @@ export default function LiveDashboard() {
 
   const stats: Stat[] = [
     { label: "Active courses", value: String(enrolments.length), sub: first.course.title },
-    { label: "Overall progress", value: `${p.percent}%`, sub: `${p.lessonsCompleted} of ${p.lessonsTotal} lessons` },
+   { label: "Overall progress", value: `${p.percent}%`, sub: `${p.lessonsCompleted}/${p.lessonsTotal} lessons · ${p.quizzesSubmitted}/${p.quizzesTotal} quizzes` },
     { label: "Completed modules", value: String(p.modulesCompleted), sub: `${p.modulesTotal - p.modulesCompleted} modules remaining` },
     {
       label: "Latest quiz",
