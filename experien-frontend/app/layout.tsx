@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import NextTopLoader from "nextjs-toploader";
 import HideOnAdmin from "@/components/layout/HideOnAdmin";
 import PageShell from "@/components/layout/PageShell";
 import { AuthProvider } from "@/components/auth/AuthProvider";
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={manrope.variable}>
       <body className="flex min-h-screen flex-col font-sans">
+        <NextTopLoader color="#B0C45A" height={3} showSpinner={false} />
         <AuthProvider>
           <HideOnAdmin><Navbar /></HideOnAdmin>
           <PageShell>{children}</PageShell>

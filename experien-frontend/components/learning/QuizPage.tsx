@@ -72,7 +72,8 @@ export default function QuizPage({
         });
         const review: QuizReview = { ...res.attempt, results: res.results };
         saveAttempt(mod.id, answers as number[], review.scorePercent, review);
-        if (review.passed && quizLessonId) markComplete(quizLessonId);
+        // if (review.passed && quizLessonId) markComplete(quizLessonId);
+        if (quizLessonId) markComplete(quizLessonId); // the backend counts any submitted quiz
         router.push(result);
       } catch (err) {
         setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");

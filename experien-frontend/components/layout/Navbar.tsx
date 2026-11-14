@@ -16,6 +16,12 @@ export default function Navbar() {
   const { user, status, logout } = useAuth();
   const close = () => setOpen(false);
 
+  const [loggingOut, setLoggingOut] = useState(false);
+  async function handleLogout() {
+    setLoggingOut(true);
+    await logout();
+    setLoggingOut(false);
+  }
   return (
     <header className="border-b border-line bg-white">
       <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-3 md:grid md:grid-cols-[1fr_auto_1fr] md:px-16">
@@ -43,10 +49,11 @@ export default function Navbar() {
               <Link href="/dashboard" className="hover:opacity-70">My learning</Link>
               <button
                 type="button"
-                onClick={() => logout()}
-                className="rounded-lg bg-lime px-4 py-2 hover:brightness-95"
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="rounded-lg bg-lime px-4 py-2 hover:brightness-95 disabled:opacity-60"
               >
-                Log out
+                {loggingOut ? "Logging out..." : "Log out"}
               </button>
             </>
           ) : (
@@ -92,11 +99,12 @@ export default function Navbar() {
                   type="button"
                   onClick={() => {
                     close();
-                    logout();
+                    handleLogout();
                   }}
-                  className="rounded-lg bg-lime px-4 py-2 text-center"
+                  disabled={loggingOut}
+                  className="rounded-lg bg-lime px-4 py-2 text-center disabled:opacity-60"
                 >
-                  Log out
+                  {loggingOut ? "Logging out..." : "Log out"}
                 </button>
               </>
             ) : (

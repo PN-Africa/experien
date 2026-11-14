@@ -108,7 +108,8 @@ function toLearningData(d: ApiLearning): LearningData {
       if (m.quiz) {
         const id = lessonId(m.slug, contents.length);
         contents.push({ title: `Module ${m.position} knowledge check`, meta: `Quiz · ${m.quiz.questionCount} questions` });
-        if (m.quiz.passed === true) completedIds.push(id);
+        // if (m.quiz.passed === true) completedIds.push(id);
+        if (m.quiz.submitted) completedIds.push(id);
         if (m.quiz.latestScorePercent !== null) scores[m.slug] = m.quiz.latestScorePercent;
       }
 
