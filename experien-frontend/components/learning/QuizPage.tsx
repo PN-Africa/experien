@@ -4,7 +4,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { CourseModule } from "@/types/Course";
-import type { Question } from "@/types/learning";
+import type { Question, QuizReview } from "@/types/learning";
+import { ApiError, apiFetch } from "@/lib/api/client";
 import { PASS_MARK, pad } from "@/lib/utils/learning";
 import { useProgress } from "./ProgressProvider";
 import LearnHeader from "./LearnHeader";
@@ -33,6 +34,9 @@ export default function QuizPage({
     questions.map(() => null)
   );
   const [current, setCurrent] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const live = questions[0]?.optionIds !== undefined; // questions came from the backend
 
   const answered = answers.filter((a) => a !== null).length;
   const q = questions[current];
@@ -45,22 +49,44 @@ export default function QuizPage({
     );
   }
 
-  function submit() {
-    if (questions.length === 0 || answered < questions.length) return;
+  async function submit() {
+    if (questions.length === 0 || answered < questions.length || submitting) return;
+    const result = `/learn/${slug}/${mod.id}/quiz/result`;
 
-    const correct = questions.filter(
-      (x, i) => answers[i] === x.answer
-    ).length;
-
-    const pct = Math.round((correct / questions.length) * 100);
-
-    saveAttempt(mod.id, answers as number[], pct);
-
-    if (pct >= PASS_MARK && quizLessonId) {
-      markComplete(quizLessonId);
+    // Real backend: the backend grades the answers.
+    if (live) {
+      setSubmitting(true);
+      setError("");
+      try {
+        const res = await apiFetch<{
+          attempt: Omit<QuizReview, "results" | "incorrectCount"> & { incorrectCount: number };
+          results: QuizReview["results"];
+        }>(`/courses/${encodeURIComponent(slug)}/modules/${encodeURIComponent(mod.id)}/quiz/submit`, {
+          method: "POST",
+          json: {
+            answers: questions.map((x, i) => ({
+              questionId: x.id,
+              optionId: x.optionIds![answers[i] as number],
+            })),
+          },
+        });
+        const review: QuizReview = { ...res.attempt, results: res.results };
+        saveAttempt(mod.id, answers as number[], review.scorePercent, review);
+        if (review.passed && quizLessonId) markComplete(quizLessonId);
+        router.push(result);
+      } catch (err) {
+        setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");
+        setSubmitting(false);
+      }
+      return;
     }
 
-    router.push(`/learn/${slug}/${mod.id}/quiz/result`);
+    // Mock mode: grade in the browser
+    const correct = questions.filter((x, i) => answers[i] === x.answer).length;
+    const pct = Math.round((correct / questions.length) * 100);
+    saveAttempt(mod.id, answers as number[], pct);
+    if (pct >= PASS_MARK && quizLessonId) markComplete(quizLessonId);
+    router.push(result);
   }
 
   if (questions.length === 0) {
@@ -212,13 +238,17 @@ export default function QuizPage({
                 <button
                   type="button"
                   onClick={submit}
-                  disabled={answered < questions.length}
+                  disabled={answered < questions.length || submitting}
                   style={{ backgroundColor: LIME_DARK }}
                   className="rounded-lg px-4 py-2 text-xs font-medium text-ink disabled:opacity-50"
                 >
-                  Submit quiz
+                  {submitting ? "Submitting..." : "Submit quiz"}
                 </button>
               </div>
+
+              {error && (
+                <p role="alert" className="mt-3 text-xs text-red-700">{error}</p>
+              )}
 
               {answered < questions.length && (
                 <p className="mt-2 text-[11px] text-muted">

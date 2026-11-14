@@ -5,6 +5,7 @@ import type { Course, CourseModule } from "@/types/Course";
 import { getCourseBySlug } from "@/lib/mock/Courses";
 import { enrolments } from "@/lib/mock/learner";
 import { TOKEN_COOKIE } from "@/lib/auth/constants";
+import type { Question } from "@/types/learning";
 import { lessonId } from "@/lib/utils/learning";
 
 // ---- Shapes confirmed from real API responses ----
@@ -155,4 +156,28 @@ export async function getLessonDetail(courseSlug: string, lessonSlug: string): P
     `/courses/${encodeURIComponent(courseSlug)}/lessons/${encodeURIComponent(lessonSlug)}`
   );
   return r.state === "ok" ? r.data : null;
+}
+
+// ---- Quiz questions (the backend never sends the correct answers) ----
+type ApiQuiz = {
+  quiz: {
+    questions: { id: string; position: number; text: string; options: { id: string; text: string }[] }[];
+  };
+};
+
+export async function getLiveQuiz(courseSlug: string, moduleSlug: string): Promise<Question[]> {
+  const r = await authedGet<ApiQuiz>(
+    `/courses/${encodeURIComponent(courseSlug)}/modules/${encodeURIComponent(moduleSlug)}/quiz`
+  );
+  if (r.state !== "ok") return [];
+  return [...r.data.quiz.questions]
+    .sort((a, b) => a.position - b.position)
+    .map((q) => ({
+      id: q.id,
+      topic: q.text,
+      text: q.text,
+      options: q.options.map((o) => o.text),
+      optionIds: q.options.map((o) => o.id),
+      answer: -1, // unknown on the frontend: the backend grades the answers
+    }));
 }

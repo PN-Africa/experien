@@ -135,8 +135,7 @@ export default function LiveDashboard() {
   // Stats use the first enrolment, like the mock version did.
   const first = enrolments[0];
   const p = first.progress;
-  const score =
-    first.latestQuiz && typeof first.latestQuiz.score === "number" ? first.latestQuiz.score : null;
+  const score = first.latestQuiz ? first.latestQuiz.scorePercent : null;
 
   const stats: Stat[] = [
     { label: "Active courses", value: String(enrolments.length), sub: first.course.title },

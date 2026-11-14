@@ -14,12 +14,14 @@ type Props = {
   moduleIndex: number;
   questions: Question[];
   reviews: { label: string; href: string }[];
+  slugHrefs?: Record<string, string>; // backend lesson slug -> lesson link (real backend only)
 };
 
-export default function QuizResult({ slug, mod, moduleIndex, questions, reviews }: Props) {
+export default function QuizResult({ slug, mod, moduleIndex, questions, reviews, slugHrefs }: Props) {
   const router = useRouter();
-  const { attempts } = useProgress();
+  const { attempts, quizReviews } = useProgress();
   const answers = attempts[mod.id];
+  const review = quizReviews[mod.id]; // set when the backend graded the quiz
   const quizHref = `/learn/${slug}/${mod.id}/quiz`;
 
   // Answers live in memory, so a full refresh sends the learner back to the quiz.
@@ -28,10 +30,27 @@ export default function QuizResult({ slug, mod, moduleIndex, questions, reviews 
   }, [answers, router, quizHref]);
   if (!answers) return null;
 
-  const total = questions.length;
-  const correct = questions.filter((q, i) => answers[i] === q.answer).length;
+  const total = review ? review.totalCount : questions.length;
+  const correct = review ? review.correctCount : questions.filter((q, i) => answers[i] === q.answer).length;
   const wrong = total - correct;
-  const pct = Math.round((correct / total) * 100);
+  const pct = review ? review.scorePercent : Math.round((correct / total) * 100);
+  const passMark = review ? review.passMarkPercent : PASS_MARK;
+  const passed = review ? review.passed : pct >= PASS_MARK;
+
+  // One row per question: was it right, and which lesson to revisit if not
+  const rows = questions.map((q, i) => {
+    if (review) {
+      const r = review.results.find((x) => x.questionId === q.id);
+      const lesson = r?.reviewLesson;
+      return {
+        ok: r?.correct ?? false,
+        link: lesson
+          ? { label: `Review lesson ${lesson.label}`, href: slugHrefs?.[lesson.slug] ?? `/learn/${slug}/${mod.id}/materials` }
+          : null,
+      };
+    }
+    return { ok: answers[i] === q.answer, link: reviews[i] };
+  });
   const mNum = pad(moduleIndex + 1);
 
   const stats = [
@@ -49,9 +68,9 @@ export default function QuizResult({ slug, mod, moduleIndex, questions, reviews 
           <h1 className="mt-3 text-3xl font-medium tracking-tight md:text-5xl">Quiz submitted</h1>
           <p className="mt-3 max-w-2xl text-sm md:text-base">
             You answered {correct} of {total} questions correctly.{" "}
-            {pct >= PASS_MARK
-              ? "Well done, this module is now marked complete."
-              : `Review the questions that need another look before continuing. You need ${PASS_MARK}% to pass.`}
+            {passed
+              ? "Well done, you passed this quiz."
+              : `Review the questions that need another look before continuing. You need ${passMark}% to pass.`}
           </p>
           <div className="mt-5 flex flex-wrap gap-2 text-xs font-medium">
             <span className="rounded-full bg-lime px-3 py-1 text-ink">{pct}% score</span>
@@ -78,7 +97,7 @@ export default function QuizResult({ slug, mod, moduleIndex, questions, reviews 
             <h2 className="mt-2 text-xl font-medium md:text-2xl">See where to revisit the course material.</h2>
             <ul className="mt-4 space-y-1">
               {questions.map((q, i) => {
-                const ok = answers[i] === q.answer;
+                const { ok, link } = rows[i];
                 return (
                   <li key={q.id} className={`flex items-center justify-between gap-3 rounded-lg px-3 py-3 text-sm ${ok ? "" : "bg-[#F5F2E9]"}`}>
                     <span className="flex items-center gap-3">
@@ -87,8 +106,10 @@ export default function QuizResult({ slug, mod, moduleIndex, questions, reviews 
                     </span>
                     {ok ? (
                       <span className="text-xs text-muted">Correct</span>
+                    ) : link ? (
+                      <Link href={link.href} className="text-xs underline">{link.label}</Link>
                     ) : (
-                      <Link href={reviews[i].href} className="text-xs underline">{reviews[i].label}</Link>
+                      <span className="text-xs text-muted">Incorrect</span>
                     )}
                   </li>
                 );

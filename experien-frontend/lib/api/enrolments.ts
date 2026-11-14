@@ -30,7 +30,13 @@ export type Enrolment = {
     title?: string;
     lessonType?: string;
   } | null;
-  latestQuiz: { score?: number; [key: string]: unknown } | null;
+  latestQuiz: {
+    moduleSlug: string;
+    moduleTitle: string;
+    scorePercent: number;
+    passed: boolean;
+    submittedAt: string;
+  } | null;
 };
 
 export async function getMyEnrolments(): Promise<Enrolment[]> {
